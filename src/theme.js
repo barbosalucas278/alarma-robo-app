@@ -1,10 +1,10 @@
 const theme = {
   colores: {
-    primary: "#dbe9f8",
-    secondary: "#e06f29",
-    details: "#ed9e6d",
-    detaile2: "#c57274",
-    text: "#464646",
+    primary: "#8ec0d4",
+    secondary: "#e69d53",
+    details: "#a36940",
+    detaile2: "#7c5b75",
+    text: "#3a62bb",
     error: "red",
     warning: "yellow",
     success: "green",
