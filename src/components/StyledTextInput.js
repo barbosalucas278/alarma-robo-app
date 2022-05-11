@@ -10,7 +10,7 @@ export default function StyledTextInput({ style = {}, error, size, ...props }) {
     size == "large" && styles.large,
     size == "medium" && styles.medium,
   ];
-  return <TextInput style={inputStyle} {...props}></TextInput>;
+  return <TextInput  style={inputStyle} {...props}></TextInput>;
 }
 
 const styles = StyleSheet.create({

@@ -95,10 +95,10 @@ export default function Login({ navigation }) {
                   aling="center"
                   style={{ fontFamily: theme.font.main }}
                 >
-                  Tabla Didáctica
+                  Alarma
                 </StyledText>
                 <StyledText fontSize="heading" aling="center">
-                  de Idiomas
+                  de Robos
                 </StyledText>
               </View>
               {formulario && (

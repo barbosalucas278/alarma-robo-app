@@ -12,16 +12,26 @@ import { Accelerometer, Magnetometer } from "expo-sensors";
 import StyledText from "../StyledText";
 import { Sound } from "expo-av/build/Audio";
 import StyledTouchableHighlight from "../StyledTouchableHighlight";
+import StyledTextInput from "../StyledTextInput";
+import { getUsuarioByEmail } from "../../services/FirestoreServices";
+import { auth } from "../../../firebase";
 
 export default function Alarma(props) {
-  const [activado, setActivado] = useState(true);
+  const [armado, setArmado] = useState(true);
+  const [password, setPassword] = useState("");
+  const [error, showError] = useState(false);
+  const [alarmaActivada, setAlarmaActivada] = useState(false);
   const camaraRef = useRef();
   const [hasPermission, setHasPermission] = useState(null);
   const [showFlash, setShowFlash] = useState(false);
   const [alarmaHorizontal, setAlarmaHorizontal] = useState(false); // x > 90 && y < 10 || x < -90 && y < 10
+  const [timerHorizontal, setTimerHorizontal] = useState();
   const [alarmaVertical, setAlarmaVertical] = useState(false);
+  const [timerVertical, setTimerVertical] = useState();
   const [alarmaDerecha, setalarmaDerecha] = useState(false);
+  const [timerDerecha, setTimerDerecha] = useState();
   const [alarmaIzquierda, setalarmaIzquierda] = useState(false);
+  const [timerIzquierda, setTimerIzquierda] = useState();
   const [dataAcelerometro, setDataAcelerometro] = useState({
     x: 0,
     y: 0,
@@ -48,7 +58,7 @@ export default function Alarma(props) {
         setDataAcelerometro(accelerometerData);
       })
     );
-    Accelerometer.setUpdateInterval(500);
+    Accelerometer.setUpdateInterval(250);
   };
   const _subscribeMagnometro = () => {
     setMagnometroSubscription(
@@ -85,36 +95,57 @@ export default function Alarma(props) {
   useEffect(() => {
     if (alarmaVertical || alarmaHorizontal || alarmaDerecha || alarmaIzquierda)
       return;
-    if (!activado) return;
+    if (!armado) return;
 
     const posicionX = Math.round(dataAcelerometro.x * 100);
     const posicionY = Math.round(dataAcelerometro.y * 100);
+    const posicionZ = Math.round(dataAcelerometro.z * 100);
     if (
-      (posicionX > 80 && posicionY < 20) ||
-      (posicionX < -80 && posicionY < 20)
+      (posicionX > 80 && posicionY < 20 && posicionZ <= 70) ||
+      (posicionX < -80 && posicionY < 20 && posicionZ <= 70)
     ) {
-      setAlarmaHorizontal(true);
-      console.log("se activa horizontal");
+      setAlarmaActivada(true);
+
+      if (alarmaActivada) {
+        setAlarmaHorizontal(true);
+        setTimerHorizontal(
+          setInterval(() => {
+            Sound.createAsync(require("../../../assets/audios/perro.wav")).then(
+              ({ sound }) => {
+                Vibration.vibrate(5000);
+                sound.playAsync();
+              }
+            );
+          }, 6000)
+        );
+      }
     }
 
     if (
       (posicionX < 20 && posicionY > 80) ||
       (posicionX < 20 && posicionY < -80)
     ) {
-      setAlarmaVertical(true);
-      Sound.createAsync(require("../../../assets/audios/tortuga.wav")).then(
-        ({ sound }) => {
-          prenderFlashAsync();
-          sound.playAsync();
-        }
-      );
-      console.log("se activa vertical");
+      setAlarmaActivada(true);
+
+      if (alarmaActivada) {
+        setAlarmaVertical(true);
+        setTimerVertical(
+          setInterval(() => {
+            Sound.createAsync(
+              require("../../../assets/audios/tortuga.wav")
+            ).then(({ sound }) => {
+              prenderFlashAsync();
+              sound.playAsync();
+            });
+          }, 6000)
+        );
+      }
     }
-  }, [dataAcelerometro.x, dataAcelerometro.y]);
+  }, [dataAcelerometro.x, dataAcelerometro.y, alarmaActivada]);
+
   const prenderFlashAsync = () => {
     setShowFlash(true);
     setTimeout(() => {
-      console.log("stop");
       setShowFlash(false);
     }, 5000);
   };
@@ -123,40 +154,109 @@ export default function Alarma(props) {
   useEffect(() => {
     if (alarmaVertical || alarmaHorizontal || alarmaDerecha || alarmaIzquierda)
       return;
-    if (!activado) return;
+    if (!armado) return;
     if (dataPreviaMagnometro.x == 0) {
       setDataPreviaMagnometro(dataMagnometro);
     }
     const posicionX = dataPreviaMagnometro.x - dataMagnometro.x;
+    const posicionZ = dataMagnometro.z;
 
-    if (posicionX >= 3) {
-      console.log("Se activa derecha");
-      setalarmaDerecha(true);
+    if (posicionX >= 2 && posicionZ >= 18) {
+      setAlarmaActivada(true);
+
+      if (alarmaActivada) {
+        setalarmaDerecha(true);
+        setTimerDerecha(
+          setInterval(() => {
+            Sound.createAsync(require("../../../assets/audios/gato.wav")).then(
+              ({ sound }) => {
+                sound.playAsync();
+              }
+            );
+          }, 3000)
+        );
+      }
     }
 
-    if (posicionX <= -3) {
-      console.log("Se activa izquierda");
-      setalarmaIzquierda(true);
+    if (posicionX <= -2 && posicionZ >= 18) {
+      setAlarmaActivada(true);
+
+      if (alarmaActivada) {
+        setalarmaIzquierda(true);
+        setTimerIzquierda(
+          setInterval(() => {
+            Sound.createAsync(require("../../../assets/audios/pollo.wav")).then(
+              ({ sound }) => {
+                sound.playAsync();
+              }
+            );
+          }, 3000)
+        );
+      }
     }
-  }, [dataMagnometro.x, dataMagnometro.y]);
+  }, [dataMagnometro.x, dataMagnometro.y, alarmaActivada]);
+  const limparAlarmas = () => {
+    console.log("alarmas desactivadas");
+    clearInterval(timerHorizontal);
+    clearInterval(timerVertical);
+    clearInterval(timerDerecha);
+    clearInterval(timerIzquierda);
+
+    setAlarmaActivada(false);
+    setalarmaDerecha(false);
+    setalarmaIzquierda(false);
+    setAlarmaHorizontal(false);
+    setAlarmaVertical(false);
+    setArmado(false);
+  };
+  const ingresarPassword = () => {
+    getUsuarioByEmail(
+      auth.currentUser.email,
+      (data) => {
+        const respuesta = data.docs.map((doc) => doc.data());
+        const { clave } = respuesta[0];
+        if (password == clave) {
+          limparAlarmas();
+          props.onDesactivar();
+        } else {
+          showError(true);
+          setTimeout(() => {
+            showError(false);
+          }, 3000);
+        }
+      },
+      (error) => console.log(error)
+    );
+  };
   return (
     <View style={styles.container}>
       <StyledText aling="center" fontSize="heading">
         Alarma Activada
       </StyledText>
-      <StyledTouchableHighlight
-        btnVotar
-        onPress={() => {
-          setActivado(false);
-          props.onDesactivar();
-        }}
-      >
+      <StyledTextInput
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+        secureTextEntry
+        placeholder="Ingrese su contraseña para desactivar"
+      ></StyledTextInput>
+      {error && (
+        <StyledText
+          aling={"center"}
+          fontSize="subHeading"
+          color={"error"}
+          error
+        >
+          La contraseña es inválida
+        </StyledText>
+      )}
+      <StyledTouchableHighlight btnVotar onPress={() => ingresarPassword()}>
         <Text>Desactivar</Text>
       </StyledTouchableHighlight>
       {/* <Text>
-        x: {Math.round(x * 100)} y: {Math.round(y * 100)} z:
-        {Math.round(z * 100)}
+        x: {x} y: {y} z:
+        {z}
       </Text> */}
+
       <>
         {showFlash && (
           <Camera
@@ -173,4 +273,9 @@ export default function Alarma(props) {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "space-evenly",
+  },
+});
