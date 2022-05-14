@@ -15,6 +15,7 @@ import StyledTouchableHighlight from "../StyledTouchableHighlight";
 import StyledTextInput from "../StyledTextInput";
 import { getUsuarioByEmail } from "../../services/FirestoreServices";
 import { auth } from "../../../firebase";
+import theme from "../../theme";
 
 export default function Alarma(props) {
   const [armado, setArmado] = useState(true);
@@ -110,12 +111,12 @@ export default function Alarma(props) {
         setAlarmaHorizontal(true);
         setTimerHorizontal(
           setInterval(() => {
-            Sound.createAsync(require("../../../assets/audios/perro.wav")).then(
-              ({ sound }) => {
-                Vibration.vibrate(5000);
-                sound.playAsync();
-              }
-            );
+            Sound.createAsync(
+              require("../../../assets/audios/alarma1.wav")
+            ).then(({ sound }) => {
+              Vibration.vibrate(5000);
+              sound.playAsync();
+            });
           }, 6000)
         );
       }
@@ -132,7 +133,7 @@ export default function Alarma(props) {
         setTimerVertical(
           setInterval(() => {
             Sound.createAsync(
-              require("../../../assets/audios/tortuga.wav")
+              require("../../../assets/audios/alarma2.wav")
             ).then(({ sound }) => {
               prenderFlashAsync();
               sound.playAsync();
@@ -168,11 +169,11 @@ export default function Alarma(props) {
         setalarmaDerecha(true);
         setTimerDerecha(
           setInterval(() => {
-            Sound.createAsync(require("../../../assets/audios/gato.wav")).then(
-              ({ sound }) => {
-                sound.playAsync();
-              }
-            );
+            Sound.createAsync(
+              require("../../../assets/audios/alarma3.wav")
+            ).then(({ sound }) => {
+              sound.playAsync();
+            });
           }, 3000)
         );
       }
@@ -185,11 +186,11 @@ export default function Alarma(props) {
         setalarmaIzquierda(true);
         setTimerIzquierda(
           setInterval(() => {
-            Sound.createAsync(require("../../../assets/audios/pollo.wav")).then(
-              ({ sound }) => {
-                sound.playAsync();
-              }
-            );
+            Sound.createAsync(
+              require("../../../assets/audios/alarma4.wav")
+            ).then(({ sound }) => {
+              sound.playAsync();
+            });
           }, 3000)
         );
       }
@@ -233,25 +234,31 @@ export default function Alarma(props) {
       <StyledText aling="center" fontSize="heading">
         Alarma Activada
       </StyledText>
-      <StyledTextInput
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-        secureTextEntry
-        placeholder="Ingrese su contraseña para desactivar"
-      ></StyledTextInput>
-      {error && (
-        <StyledText
-          aling={"center"}
-          fontSize="subHeading"
-          color={"error"}
-          error
-        >
-          La contraseña es inválida
-        </StyledText>
+      {alarmaActivada && (
+        <>
+          <StyledTextInput
+            value={password}
+            style={{ fontSize: theme.fontSizes.title }}
+            onChangeText={(text) => setPassword(text)}
+            secureTextEntry
+            placeholder="Ingrese su contraseña para desactivar"
+          ></StyledTextInput>
+          {error && (
+            <StyledText
+              aling={"center"}
+              fontSize="subHeading"
+              color={"error"}
+              error
+            >
+              La contraseña es inválida
+            </StyledText>
+          )}
+          <StyledTouchableHighlight btnVotar onPress={() => ingresarPassword()}>
+            <Text>Desactivar</Text>
+          </StyledTouchableHighlight>
+        </>
       )}
-      <StyledTouchableHighlight btnVotar onPress={() => ingresarPassword()}>
-        <Text>Desactivar</Text>
-      </StyledTouchableHighlight>
+
       {/* <Text>
         x: {x} y: {y} z:
         {z}
@@ -260,7 +267,7 @@ export default function Alarma(props) {
       <>
         {showFlash && (
           <Camera
-            style={{ width: 1, height: 1 }}
+            style={{ width: 1, height: 1, position: "absolute" }}
             type={Camera.Constants.Type.back}
             ref={camaraRef}
             flashMode={"torch"}

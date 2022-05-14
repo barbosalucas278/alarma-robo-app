@@ -31,7 +31,10 @@ export default function StyledTouchableHighlight({
       <View style={btnStyles}>
         <Text
           style={[
-            { fontFamily: theme.font.main },
+            {
+              fontFamily: theme.font.main,
+              fontSize: theme.fontSizes.subHeading,
+            },
             btnVotar && styles.textVotar,
             btnLogout && styles.textVotar,
           ]}
@@ -55,8 +58,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   btnVotar: {
-    paddingHorizontal: 30,
-    paddingVertical: 24,
+    paddingHorizontal: 60,
+    paddingVertical: 44,
     backgroundColor: "green",
     marginBottom: 20,
   },
