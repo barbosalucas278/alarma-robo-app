@@ -162,7 +162,7 @@ export default function Alarma(props) {
     const posicionX = dataPreviaMagnometro.x - dataMagnometro.x;
     const posicionZ = dataMagnometro.z;
 
-    if (posicionX >= 2 && posicionZ >= 18) {
+    if (posicionX >= 4 && posicionZ > 15) {
       setAlarmaActivada(true);
 
       if (alarmaActivada) {
@@ -179,7 +179,7 @@ export default function Alarma(props) {
       }
     }
 
-    if (posicionX <= -2 && posicionZ >= 18) {
+    if (posicionX <= -4 && posicionZ > 15) {
       setAlarmaActivada(true);
 
       if (alarmaActivada) {
@@ -202,8 +202,14 @@ export default function Alarma(props) {
     clearInterval(timerVertical);
     clearInterval(timerDerecha);
     clearInterval(timerIzquierda);
-
+    setDataPreviaMagnometro({ x: 0, y: 0, z: 0 });
+    setDataMagnometro({
+      x: 0,
+      y: 0,
+      z: 0,
+    });
     setAlarmaActivada(false);
+    console.log(alarmaActivada);
     setalarmaDerecha(false);
     setalarmaIzquierda(false);
     setAlarmaHorizontal(false);
@@ -259,10 +265,10 @@ export default function Alarma(props) {
         </>
       )}
 
-      {/* <Text>
+      <Text>
         x: {x} y: {y} z:
         {z}
-      </Text> */}
+      </Text>
 
       <>
         {showFlash && (
