@@ -108,13 +108,13 @@ export default function Login({ navigation }) {
                   >
                     <View style={styles.contenedorForm}>
                       <FormikInputValue
-                        placeholder="Email"
+                        placeholder="Correo Electrónico"
                         name="email"
                         keyboardType="email-address"
                         size="large"
                       ></FormikInputValue>
                       <FormikInputValue
-                        placeholder="Password"
+                        placeholder="Contraseña"
                         name="password"
                         secureTextEntry
                         size="large"

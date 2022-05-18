@@ -105,42 +105,32 @@ export default function Alarma(props) {
       (posicionX > 80 && posicionY < 20 && posicionZ <= 70) ||
       (posicionX < -80 && posicionY < 20 && posicionZ <= 70)
     ) {
-      setAlarmaActivada(true);
-
-      if (alarmaActivada) {
-        setAlarmaHorizontal(true);
-        setTimerHorizontal(
-          setInterval(() => {
-            Sound.createAsync(
-              require("../../../assets/audios/alarma1.wav")
-            ).then(({ sound }) => {
-              Vibration.vibrate(5000);
-              sound.playAsync();
-            });
-          }, 6000)
-        );
-      }
+      setAlarmaHorizontal(true);
+      Sound.createAsync(require("../../../assets/audios/alarma1.wav")).then(
+        ({ sound }) => {
+          Vibration.vibrate(5000);
+          sound.playAsync();
+          setTimeout(() => {
+            setAlarmaHorizontal(false);
+          }, 7000);
+        }
+      );
     }
 
     if (
       (posicionX < 20 && posicionY > 80) ||
       (posicionX < 20 && posicionY < -80)
     ) {
-      setAlarmaActivada(true);
-
-      if (alarmaActivada) {
-        setAlarmaVertical(true);
-        setTimerVertical(
-          setInterval(() => {
-            Sound.createAsync(
-              require("../../../assets/audios/alarma2.wav")
-            ).then(({ sound }) => {
-              prenderFlashAsync();
-              sound.playAsync();
-            });
-          }, 6000)
-        );
-      }
+      setAlarmaVertical(true);
+      Sound.createAsync(require("../../../assets/audios/alarma2.wav")).then(
+        ({ sound }) => {
+          prenderFlashAsync();
+          sound.playAsync();
+          setTimeout(() => {
+            setAlarmaVertical(false);
+          }, 7000);
+        }
+      );
     }
   }, [dataAcelerometro.x, dataAcelerometro.y, alarmaActivada]);
 
@@ -161,59 +151,51 @@ export default function Alarma(props) {
     }
     const posicionX = dataPreviaMagnometro.x - dataMagnometro.x;
     const posicionZ = dataMagnometro.z;
-
+    // console.log(
+    //   `x: ${dataAcelerometro.x},y:${dataAcelerometro.y},z:${dataMagnometro.z}`
+    // );
     if (posicionX >= 4 && posicionZ > 15) {
-      setAlarmaActivada(true);
-
-      if (alarmaActivada) {
-        setalarmaDerecha(true);
-        setTimerDerecha(
-          setInterval(() => {
-            Sound.createAsync(
-              require("../../../assets/audios/alarma3.wav")
-            ).then(({ sound }) => {
-              sound.playAsync();
-            });
-          }, 3000)
-        );
-      }
+      setalarmaIzquierda(true);
+      Sound.createAsync(require("../../../assets/audios/alarma3.wav")).then(
+        ({ sound }) => {
+          sound.playAsync();
+          setTimeout(() => {
+            setalarmaIzquierda(false);
+          }, 5000);
+        }
+      );
     }
 
-    if (posicionX <= -4 && posicionZ > 15) {
-      setAlarmaActivada(true);
-
-      if (alarmaActivada) {
-        setalarmaIzquierda(true);
-        setTimerIzquierda(
-          setInterval(() => {
-            Sound.createAsync(
-              require("../../../assets/audios/alarma4.wav")
-            ).then(({ sound }) => {
-              sound.playAsync();
-            });
-          }, 3000)
-        );
-      }
+    if (posicionX <= -4 && posicionZ < 16) {
+      setalarmaDerecha(true);
+      Sound.createAsync(require("../../../assets/audios/alarma4.wav")).then(
+        ({ sound }) => {
+          sound.playAsync();
+          setTimeout(() => {
+            setalarmaDerecha(false);
+          }, 5000);
+        }
+      );
     }
   }, [dataMagnometro.x, dataMagnometro.y, alarmaActivada]);
   const limparAlarmas = () => {
-    console.log("alarmas desactivadas");
-    clearInterval(timerHorizontal);
-    clearInterval(timerVertical);
-    clearInterval(timerDerecha);
-    clearInterval(timerIzquierda);
-    setDataPreviaMagnometro({ x: 0, y: 0, z: 0 });
-    setDataMagnometro({
-      x: 0,
-      y: 0,
-      z: 0,
-    });
-    setAlarmaActivada(false);
-    console.log(alarmaActivada);
-    setalarmaDerecha(false);
-    setalarmaIzquierda(false);
-    setAlarmaHorizontal(false);
-    setAlarmaVertical(false);
+    // console.log("alarmas desactivadas");
+    // clearInterval(timerHorizontal);
+    // clearInterval(timerVertical);
+    // clearInterval(timerDerecha);
+    // clearInterval(timerIzquierda);
+    // setDataPreviaMagnometro({ x: 0, y: 0, z: 0 });
+    // setDataMagnometro({
+    //   x: 0,
+    //   y: 0,
+    //   z: 0,
+    // });
+    // setAlarmaActivada(false);
+    // console.log(alarmaActivada);
+    // setalarmaDerecha(false);
+    // setalarmaIzquierda(false);
+    // setAlarmaHorizontal(false);
+    // setAlarmaVertical(false);
     setArmado(false);
   };
   const ingresarPassword = () => {
@@ -240,35 +222,31 @@ export default function Alarma(props) {
       <StyledText aling="center" fontSize="heading">
         Alarma Activada
       </StyledText>
-      {alarmaActivada && (
-        <>
-          <StyledTextInput
-            value={password}
-            style={{ fontSize: theme.fontSizes.title }}
-            onChangeText={(text) => setPassword(text)}
-            secureTextEntry
-            placeholder="Ingrese su contraseña para desactivar"
-          ></StyledTextInput>
-          {error && (
-            <StyledText
-              aling={"center"}
-              fontSize="subHeading"
-              color={"error"}
-              error
-            >
-              La contraseña es inválida
-            </StyledText>
-          )}
-          <StyledTouchableHighlight btnVotar onPress={() => ingresarPassword()}>
-            <Text>Desactivar</Text>
-          </StyledTouchableHighlight>
-        </>
+      <StyledTextInput
+        value={password}
+        style={{ fontSize: theme.fontSizes.title }}
+        onChangeText={(text) => setPassword(text)}
+        secureTextEntry
+        placeholder="Ingrese su contraseña para desactivar"
+      ></StyledTextInput>
+      {error && (
+        <StyledText
+          aling={"center"}
+          fontSize="subHeading"
+          color={"error"}
+          error
+        >
+          La contraseña es inválida
+        </StyledText>
       )}
+      <StyledTouchableHighlight btnVotar onPress={() => ingresarPassword()}>
+        <Text>Desactivar</Text>
+      </StyledTouchableHighlight>
 
-      <Text>
+      {/* <Text>
         x: {x} y: {y} z:
         {z}
-      </Text>
+      </Text> */}
 
       <>
         {showFlash && (

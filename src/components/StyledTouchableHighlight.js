@@ -36,7 +36,7 @@ export default function StyledTouchableHighlight({
               fontSize: theme.fontSizes.subHeading,
             },
             btnVotar && styles.textVotar,
-            btnLogout && styles.textVotar,
+            btnLogout && styles.textLogout,
           ]}
         >
           {children}
@@ -62,14 +62,18 @@ const styles = StyleSheet.create({
     paddingVertical: 44,
     backgroundColor: "green",
     marginBottom: 20,
+    justifyContent: "flex-start",
   },
   btnLogout: {
-    paddingHorizontal: 30,
+    paddingHorizontal: 25,
     paddingVertical: 24,
     color: "white",
     backgroundColor: "red",
   },
   textVotar: {
+    color: "white",
+  },
+  textLogout: {
     color: "white",
   },
   secondary: {

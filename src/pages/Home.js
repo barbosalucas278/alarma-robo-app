@@ -47,15 +47,34 @@ export default function Home({ navigation }) {
           ) : (
             <>
               <View style={styles.container}>
-                <StyledTouchableHighlight
-                  btnVotar
-                  onPress={handleActivarAlarma}
+                <TouchableHighlight onPress={handleActivarAlarma}>
+                  <View style={styles.btnActivarAlarma}>
+                    <Image
+                      resizeMode="contain"
+                      style={{ width: 100, height: 100 }}
+                      source={require("../../assets/icon.png")}
+                    ></Image>
+                    <Text
+                      style={{
+                        fontFamily: theme.font.main,
+                        fontSize: theme.fontSizes.subHeading,
+                        color: "white",
+                      }}
+                    >
+                      Activar alarma!
+                    </Text>
+                  </View>
+                </TouchableHighlight>
+                <View
+                  style={{
+                    right: Dimensions.get("screen").width * 0.25,
+                    top: Dimensions.get("screen").height * 0.2,
+                  }}
                 >
-                  Activar alarma!
-                </StyledTouchableHighlight>
-                <StyledTouchableHighlight btnLogout onPress={logout}>
-                  Cerrar Sesión
-                </StyledTouchableHighlight>
+                  <StyledTouchableHighlight btnLogout onPress={logout}>
+                    Cerrar Sesión
+                  </StyledTouchableHighlight>
+                </View>
               </View>
             </>
           )}
@@ -72,5 +91,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: theme.colores.primary,
+  },
+  btnActivarAlarma: {
+    width: Dimensions.get("screen").width,
+    height: Dimensions.get("screen").height * 0.4,
+    backgroundColor: "green",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
